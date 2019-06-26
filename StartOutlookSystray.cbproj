@@ -7,7 +7,7 @@
         <MainSource>StartOutlookSystray.cpp</MainSource>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Release</Config>
-        <Platform Condition="'$(Platform)'==''">Win32</Platform>
+        <Platform Condition="'$(Platform)'==''">Win64</Platform>
         <TargetedPlatforms>3</TargetedPlatforms>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
@@ -58,9 +58,10 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
+        <VerInfo_Release>1</VerInfo_Release>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
-        <VerInfo_Keys>CompanyName=Flyonsoft;FileDescription=Run Outlook on Systray at Windows Startup;FileVersion=1.0.0.0;InternalName=StartOutlookSystray;LegalCopyright=;LegalTrademarks=;OriginalFilename=StartOutlookSystray.exe;ProductName=StartOutlookSystray;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=Flyonsoft;FileDescription=Run Outlook on Systray at Windows Startup;FileVersion=1.0.1.0;InternalName=StartOutlookSystray;LegalCopyright=Flyonsoft © 2019 All Rights Reversed ... or not;LegalTrademarks=;OriginalFilename=StartOutlookSystray.exe;ProductName=StartOutlookSystray;ProductVersion=1.0.1.0;Comments=</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <_TCHARMapping>wchar_t</_TCHARMapping>
         <AllPackageLibs>rtl.lib;vcl.lib;bcbsmp.lib;vclx.lib</AllPackageLibs>
@@ -84,21 +85,18 @@
         <IncludePath>$(BDSINCLUDE)\windows\vcl;$(IncludePath)</IncludePath>
         <PackageImports>7zip;Abbrevia;AbbreviaVCL;AbbreviaVCLDesign;adortl;bcbie;bcbofficexp;bcbsmp;bdertl;bindcomp;bindcompdbx;bindcompfmx;bindcompvcl;bindengine;BMThreadPkgCBXE4;CloudService;CodeSiteExpressPkg;CustomIPTransport;DataSnapCommon;dbexpress;dbrtl;dbxcds;DbxClientDriver;DbxCommonDriver;DBXInterBaseDriver;DBXMySQLDriver;DBXSqliteDriver;DCPcppbuilder5;dsnap;dsnapcon;fmx;fmxase;fmxdae;fmxobj;FMXTee;FmxTeeUI;frx18;frxDB18;frxe18;ibxpress;IndyAdv;IndyCore;IndyIPClient;IndyIPCommon;IndyIPServer;IndyProtocols;IndySystem;inet;inetdbbde;inetdbxpress;Intraweb;Jcl;JclDeveloperTools;JclVcl;JvAppFrm;JvBands;JvBDE;JvCmp;JvControls;JvCore;JvCrypt;JvCustom;JvDB;JvDlgs;JvDocking;JvDotNetCtrls;JvGlobus;JvHMI;JvJans;JvManagedThreads;JvMM;JvNet;JvPageComps;JvPascalInterpreter;JvPluginSystem;JvPrintPreview;JvRuntimeDesign;JvStdCtrls;JvSystem;JvTimeFramework;JvWizards;JvXPCtrls;LockBox3CR;MetropolisUILiveTile;PowerPDFCR;rtl;soaprtl;svn;Tee;TeeDB;TeeUI;UIBBCB12Win32D;UIBBCB12Win32R;vcl;vclactnband;vcldb;vcldbx;vcldsnap;vclib;vclie;vclimg;vclribbon;vcltouch;vclx;webdsnap;xmlrtl;ZComponent;ZCore;ZDbc;ZParseSql;ZPlain;$(PackageImports)</PackageImports>
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
-        <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
-        <Icon_MainIcon>StartOutlookSystray_Icon.ico</Icon_MainIcon>
-        <VerInfo_Locale>1033</VerInfo_Locale>
-        <VerInfo_Keys>CompanyName=Flyonsoft;FileDescription=Run outlook on Startup in Systray;FileVersion=1.0.0.0;InternalName=;LegalCopyright=Flyonsoft 2017;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <IncludePath>$(BDSINCLUDE)\windows\vcl;$(IncludePath)</IncludePath>
         <BCC_PCHName_Clang>StartOutlookSystrayPCH1.h</BCC_PCHName_Clang>
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;$(DCC_Namespace)</DCC_Namespace>
-        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <PackageImports>adortl;bindcomp;bindcompdbx;bindcompfmx;bindcompvcl;bindengine;CloudService;CustomIPTransport;DataSnapCommon;dbexpress;dbrtl;dbxcds;DbxClientDriver;DbxCommonDriver;DBXInterBaseDriver;DBXMySQLDriver;DBXSqliteDriver;dsnap;dsnapcon;fmx;fmxase;fmxdae;fmxobj;FMXTee;FmxTeeUI;ibxpress;IndyCore;IndyIPClient;IndyIPCommon;IndyIPServer;IndyProtocols;IndySystem;inet;inetdbxpress;Intraweb;LockBox3CR;MetropolisUILiveTile;PowerPDFCR;rtl;soaprtl;Tee;TeeDB;TeeUI;vcl;vclactnband;vcldb;vcldsnap;vclib;vclie;vclimg;vclribbon;vcltouch;vclx;webdsnap;xmlrtl;$(PackageImports)</PackageImports>
-        <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
+        <BCC_InstructionSet>6</BCC_InstructionSet>
+        <DCC_RangeChecking>true</DCC_RangeChecking>
+        <DCC_IntegerOverflowCheck>true</DCC_IntegerOverflowCheck>
         <BCC_OptimizeForSpeed>false</BCC_OptimizeForSpeed>
         <BCC_DisableOptimizations>true</BCC_DisableOptimizations>
         <DCC_Optimize>false</DCC_Optimize>
@@ -121,21 +119,18 @@
         <ILINK_TranslatedLibraryPath>$(BDSLIB)\$(PLATFORM)\debug\$(LANGDIR);$(ILINK_TranslatedLibraryPath)</ILINK_TranslatedLibraryPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
-        <VerInfo_Keys>CompanyName=Flyonsoft;FileDescription=Run outlook on Startup in Systray;FileVersion=1.0.0.0;InternalName=;LegalCopyright=Flyonsoft 2017;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
-        <VerInfo_Locale>1033</VerInfo_Locale>
-        <LinkPackageImports>rtl.bpi;vcl.bpi</LinkPackageImports>
+        <LinkPackageImports>rtl.bpi;vcl.bpi;bcbsmp.bpi;vclx.bpi</LinkPackageImports>
         <Icon_MainIcon>StartOutlookSystray_Icon.ico</Icon_MainIcon>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
+        <LinkPackageImports>rtl.bpi;vcl.bpi;vclx.bpi</LinkPackageImports>
+        <LinkPackageStatics>bcbsmp.lib</LinkPackageStatics>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
-        <VerInfo_Locale>1033</VerInfo_Locale>
-        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
+        <BCC_InstructionSet>6</BCC_InstructionSet>
         <UsePackages>false</UsePackages>
-        <VerInfo_Locale>1036</VerInfo_Locale>
-        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=StartOutlookSystray;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <Defines>NDEBUG;$(Defines)</Defines>
         <TASM_Debugging>None</TASM_Debugging>
     </PropertyGroup>
@@ -144,15 +139,11 @@
         <UsePackages>false</UsePackages>
         <LinkPackageStatics>rtl.lib;vcl.lib;bcbsmp.lib;vclx.lib</LinkPackageStatics>
         <DCC_DebugInformation>false</DCC_DebugInformation>
-        <Icon_MainIcon>StartOutlookSystray_Icon.ico</Icon_MainIcon>
-        <VerInfo_Locale>1033</VerInfo_Locale>
         <BCC_InstructionSet>6</BCC_InstructionSet>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
         <UsePackages>false</UsePackages>
-        <Icon_MainIcon>StartOutlookSystray_Icon.ico</Icon_MainIcon>
         <DynamicRTL>false</DynamicRTL>
-        <VerInfo_Locale>1033</VerInfo_Locale>
         <LinkPackageStatics>rtl.lib;vcl.lib;bcbsmp.lib;vclx.lib</LinkPackageStatics>
         <BCC_PCHName_Clang>StartOutlookSystrayPCH1.h</BCC_PCHName_Clang>
     </PropertyGroup>
@@ -162,6 +153,7 @@
         </CppCompile>
         <PCHCompile Include="StartOutlookSystrayPCH1.h">
             <BuildOrder>1</BuildOrder>
+            <PCH>true</PCH>
         </PCHCompile>
         <CppCompile Include="Unit1.cpp">
             <Form>Form1</Form>
@@ -190,6 +182,14 @@
                 <Source>
                     <Source Name="MainSource">StartOutlookSystray.cpp</Source>
                 </Source>
+                <ProjectProperties>
+                    <ProjectProperties Name="AutoShowDeps">False</ProjectProperties>
+                    <ProjectProperties Name="ManagePaths">True</ProjectProperties>
+                    <ProjectProperties Name="VerifyPackages">True</ProjectProperties>
+                </ProjectProperties>
+                <Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\bcboffice2k180.bpl">Package Serveurs Office 2000 Embarcadero C++Builder</Excluded_Packages>
+                </Excluded_Packages>
                 <VersionInfo>
                     <VersionInfo Name="IncludeVerInfo">False</VersionInfo>
                     <VersionInfo Name="AutoIncBuild">False</VersionInfo>
@@ -231,14 +231,6 @@
                     <VersionInfoKeys Name="CFBundleInfoDictionaryVersion"/>
                     <VersionInfoKeys Name="CFBundleDevelopmentRegion"/>
                 </VersionInfoKeys>
-                <ProjectProperties>
-                    <ProjectProperties Name="AutoShowDeps">False</ProjectProperties>
-                    <ProjectProperties Name="ManagePaths">True</ProjectProperties>
-                    <ProjectProperties Name="VerifyPackages">True</ProjectProperties>
-                </ProjectProperties>
-                <Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\bcboffice2k180.bpl">Package Serveurs Office 2000 Embarcadero C++Builder</Excluded_Packages>
-                </Excluded_Packages>
             </CPlusPlusBuilder.Personality>
             <Deployment/>
             <Platforms>

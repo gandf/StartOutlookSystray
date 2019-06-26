@@ -4,7 +4,7 @@ object Form1: TForm1
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Start Outlook Systray'
-  ClientHeight = 263
+  ClientHeight = 235
   ClientWidth = 571
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -5435,7 +5435,7 @@ object Form1: TForm1
   object OutlookParameter: TEdit
     Left = 198
     Top = 89
-    Width = 121
+    Width = 145
     Height = 21
     TabOrder = 3
     Text = '/recycle'
@@ -5454,18 +5454,18 @@ object Form1: TForm1
       'Fran'#231'ais')
   end
   object RunOnStartup: TButton
-    Left = 198
+    Left = 8
     Top = 202
-    Width = 232
+    Width = 273
     Height = 25
     Caption = '&Run on Windows Startup'
-    TabOrder = 8
+    TabOrder = 9
     OnClick = RunOnStartupClick
   end
   object Test: TButton
-    Left = 198
+    Left = 8
     Top = 171
-    Width = 105
+    Width = 132
     Height = 25
     Caption = '&Test'
     TabOrder = 6
@@ -5484,9 +5484,9 @@ object Form1: TForm1
       'ShowMessage')
   end
   object Save: TButton
-    Left = 325
-    Top = 171
-    Width = 105
+    Left = 149
+    Top = 170
+    Width = 132
     Height = 25
     Caption = '&Save'
     TabOrder = 7
@@ -5513,12 +5513,21 @@ object Form1: TForm1
     OnChange = WaitEditChange
   end
   object DeleteFromStartup: TButton
-    Left = 198
-    Top = 233
-    Width = 232
+    Left = 290
+    Top = 202
+    Width = 273
     Height = 25
     Caption = 'Delete from Windows Startup'
-    TabOrder = 9
+    TabOrder = 10
     OnClick = DeleteFromStartupClick
+  end
+  object UpdateFromRegistry: TButton
+    Left = 290
+    Top = 171
+    Width = 273
+    Height = 25
+    Caption = 'Update Path from Registry'
+    TabOrder = 8
+    OnClick = UpdateFromRegistryClick
   end
 end

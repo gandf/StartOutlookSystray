@@ -10,8 +10,9 @@
 #include <System.Win.Registry.hpp>
 #include <Windows.h>
 #include <Vcl.ComCtrls.hpp>
-#include "cspin.h"
 #include <IniFiles.hpp>
+#include <System.IOUtils.hpp>
+#include <TlHelp32.h>
 //---------------------------------------------------------------------------
 bool CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lParam);
 class TForm1 : public TForm
@@ -34,6 +35,7 @@ __published:	// Composants gérés par l'EDI
     TEdit *WaitBefore;
     TLabel *WaitMsBeforeLbl;
     TButton *DeleteFromStartup;
+    TButton *UpdateFromRegistry;
     void __fastcall LangChange(TObject *Sender);
     void __fastcall RunOnStartupClick(TObject *Sender);
     void __fastcall FormCreate(TObject *Sender);
@@ -44,8 +46,13 @@ __published:	// Composants gérés par l'EDI
           int X, int Y);
     void __fastcall WaitEditChange(TObject *Sender);
     void __fastcall DeleteFromStartupClick(TObject *Sender);
+    void __fastcall UpdateFromRegistryClick(TObject *Sender);
 private:	// Déclarations utilisateur
     void __fastcall CheckRunOnStartup();
+    UnicodeString __fastcall ReadRegistry(bool FirstTry);
+    void __fastcall UpdatePath();
+    bool __fastcall processExists(UnicodeString exeFileName);
+    UnicodeString TextOutlookRunning;
 public:		// Déclarations utilisateur
     __fastcall TForm1(TComponent* Owner);
 };

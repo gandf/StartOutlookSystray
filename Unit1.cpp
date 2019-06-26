@@ -31,6 +31,8 @@ switch (Lang->ItemIndex)
                WaitMsLbl->Caption = "ms";
                Test->Caption = "&Test";
                Save->Caption = "&Save";
+               UpdateFromRegistry->Caption = "Update Path from &Registry";
+               TextOutlookRunning = "Outlook is already running.";
                break;
                }
        case 1: {
@@ -46,6 +48,8 @@ switch (Lang->ItemIndex)
                WaitMsLbl->Caption = "ms";
                Test->Caption = "&Tester";
                Save->Caption = "&Sauvegarder";
+               UpdateFromRegistry->Caption = "Mise à jour depuis la base de &Registre";
+               TextOutlookRunning = "Outlook est déja en cours d'exécution.";
                break;
                }
        }
@@ -54,24 +58,24 @@ CheckRunOnStartup();
 //---------------------------------------------------------------------------
 void __fastcall TForm1::RunOnStartupClick(TObject *Sender)
 {
+if (Method->ItemIndex < 0)
+   {
+   Method->ItemIndex = 0;
+   }
+if (WaitBefore->Text.ToIntDef(0) < 0)
+   {
+   WaitBefore->Text = 0;
+   }
+if (WaitEdit->Text.ToIntDef(1500) < 0)
+   {
+   WaitEdit->Text = 1500;
+   }
 TRegistry *Reg = NULL;
 try {
+    UnicodeString Param = "\"" + IntToStr(WaitBefore->Text.ToIntDef(0)) + "\" \"" + IntToStr(WaitEdit->Text.ToIntDef(1500)) + "\" \"" + IntToStr(Method->ItemIndex) + "\"";
     Reg = new TRegistry();
     Reg->RootKey = HKEY_CURRENT_USER;
     Reg->OpenKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run", false);
-    if (Method->ItemIndex < 0)
-       {
-       Method->ItemIndex = 0;
-       }
-    if (WaitBefore->Text.ToIntDef(0) < 0)
-       {
-       WaitBefore->Text = 0;
-       }
-    if (WaitEdit->Text.ToIntDef(1500) < 0)
-       {
-       WaitEdit->Text = 1500;
-       }
-    UnicodeString Param = "\"" + IntToStr(WaitBefore->Text.ToIntDef(0)) + "\" \"" + IntToStr(WaitEdit->Text.ToIntDef(1500)) + "\" \"" + IntToStr(Method->ItemIndex) + "\"";
     if (Reg->ValueExists("OutlookAutoSystray"))
       {
       Reg->DeleteValue("OutlookAutoSystray");
@@ -98,49 +102,46 @@ catch (...)
 CheckRunOnStartup();
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm1::FormCreate(TObject *Sender)
+UnicodeString __fastcall TForm1::ReadRegistry(bool FirstTry)
 {
-if (ParamCount() > 0)
-   {
-   STARTUPINFO StartInfo;
-   PROCESS_INFORMATION ProcInfo;
-   memset(&ProcInfo, 0, sizeof(ProcInfo));
-   memset(&StartInfo, 0 , sizeof(StartInfo));
-   StartInfo.cb = sizeof(StartInfo);
-   StartInfo.dwFlags = STARTF_USESHOWWINDOW;
-   StartInfo.wShowWindow = SW_MAXIMIZE;
-   Sleep(ParamStr(2).ToIntDef(0));
-   if (CreateProcess(NULL,("\"" + ParamStr(1) + "\" " + ParamStr(5)).c_str(), NULL, NULL, 0, 0, NULL, NULL, &StartInfo, &ProcInfo))
-      {
-      WaitForInputIdle(ProcInfo.hProcess, INFINITE);
-      Sleep(ParamStr(3).ToIntDef(1500));
-      EnumWindows((WNDENUMPROC)EnumWindowsProc, (LPARAM)ParamStr(4).ToIntDef(0));
-      Sleep(8000);
-      }
-   Application->ShowMainForm = false;
-   Application->Terminate();
-   }
-
 TRegistry *Reg = NULL;
 UnicodeString CLSID = "";
+UnicodeString Result = "";
 try {
     #if _WIN64
     // 64-bit Windows
-    Reg = new TRegistry(KEY_READ | KEY_WOW64_32KEY);
-    #elif _WIN32
-    // 32-bit Windows
-    int Is64 = 0;
-    if (IsWow64Process(GetCurrentProcess(), &Is64) == 0)
+    if (FirstTry)
        {
-       Is64 = 0;
-       }
-    if (Is64 != 0)
-       {
-       //app 32-bit on Windows 64
        Reg = new TRegistry(KEY_READ | KEY_WOW64_64KEY);
        }
     else {
+         Reg = new TRegistry(KEY_READ | KEY_WOW64_32KEY);
+         }
+    #elif _WIN32
+    // 32-bit Windows
+    int Is64;
+    if (!IsWow64Process(GetCurrentProcess(), &Is64))
+       {
+       Is64 = false;
+       }
+    if (Is64)
+       {
+       //app 32-bit on Windows 64
+       if (FirstTry)
+          {
+          Reg = new TRegistry(KEY_READ | KEY_WOW64_64KEY);
+          }
+       else {
+            Reg = new TRegistry(KEY_READ | KEY_WOW64_32KEY);
+            }
+       }
+    else {
          //app 32-bit on Windows 32
+         if (!FirstTry)
+            {
+            return Result;
+            }
+         //Search Outlook 32 bit
          Reg = new TRegistry(KEY_READ);
          }
     #endif
@@ -150,44 +151,27 @@ try {
        if (Reg->ValueExists(""))
           {
           CLSID = Reg->ReadString("");
+          Reg->CloseKey();
+          Reg->RootKey = HKEY_LOCAL_MACHINE;
           if (Reg->OpenKey("Software\\Classes\\CLSID\\" + CLSID + "\\LocalServer32", false))
              {
              if (Reg->ValueExists(""))
                 {
-                OutlookPath->Text = Reg->ReadString("");
-                }
-             }
-          if (OutlookPath->Text == "")
-             {
-             //Search Outlook 32 bit
-             #if _WIN64
-             // 64-bit Windows
-             Reg->Access = KEY_READ | KEY_WOW64_64KEY;
-             #elif _WIN32
-             // 32-bit Windows
-             if (Is64 != 0)
-                {
-                //app 32-bit on Windows 64
-                Reg->Access = KEY_READ | KEY_WOW64_32KEY;
-                }
-             #endif
-             if (Reg->OpenKey("Software\\Classes\\CLSID\\" + CLSID + "\\LocalServer32", false))
-                {
-                if (Reg->ValueExists(""))
-                   {
-                   OutlookPath->Text = Reg->ReadString("");
-                   }
+                Result = Reg->ReadString("");
                 }
              }
           }
        }
     Reg->CloseKey();
+    delete Reg;
+    Reg = NULL;
     }
 catch (...)
       {
       if (Reg != NULL)
          {
          try {
+             Reg->CloseKey();
              delete Reg;
              }
          catch (...)
@@ -196,6 +180,73 @@ catch (...)
          Reg = NULL;
          }
       }
+return Result;
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::FormCreate(TObject *Sender)
+{
+if (ParamCount() > 0)
+   {
+   if (processExists(ExtractFileName(ParamStr(1))))
+      {
+      Application->ShowMainForm = false;
+      Application->Terminate();
+      }
+   //Vérifie si une autre instance est en cours
+   UnicodeString MagicFile = TPath::GetTempPath() + ChangeFileExt(ExtractFileName(Application->ExeName), ".check");
+   bool CanRun = true;
+   if (FileExists(MagicFile))
+      {
+      TDateTime FileDateTime;
+      TTime ToDeduct = EncodeTime(0, 1, 0, 0);
+      if (FileAge(MagicFile, FileDateTime))
+         {
+         if (FileDateTime < (FileDateTime.CurrentDateTime() - ToDeduct))
+            {
+            DeleteFile(MagicFile);
+            }
+         else {
+              CanRun = false;
+              }
+         }
+      else {
+           CanRun = false;
+           }
+      }
+   if (CanRun)
+      {
+      //Creation du fichier temporaire
+      try {
+          TFile::Create(MagicFile);
+          }
+      catch (...)
+            {
+            }
+      STARTUPINFO StartInfo;
+      PROCESS_INFORMATION ProcInfo;
+      memset(&ProcInfo, 0, sizeof(ProcInfo));
+      memset(&StartInfo, 0 , sizeof(StartInfo));
+      StartInfo.cb = sizeof(StartInfo);
+      StartInfo.dwFlags = STARTF_USESHOWWINDOW;
+      StartInfo.wShowWindow = SW_MAXIMIZE;
+      Sleep(ParamStr(2).ToIntDef(0));
+      if (CreateProcess(NULL,("\"" + ParamStr(1) + "\" " + ParamStr(5)).c_str(), NULL, NULL, 0, 0, NULL, NULL, &StartInfo, &ProcInfo))
+         {
+         WaitForInputIdle(ProcInfo.hProcess, INFINITE);
+         Sleep(ParamStr(3).ToIntDef(1500));
+         EnumWindows((WNDENUMPROC)EnumWindowsProc, (LPARAM)ParamStr(4).ToIntDef(0));
+         Sleep(8000);
+         }
+      if (FileExists(MagicFile))
+         {
+         DeleteFile(MagicFile);
+         }
+      }
+   Application->ShowMainForm = false;
+   Application->Terminate();
+   }
+
+UpdatePath();
 
 if (FileExists(ChangeFileExt(Application->ExeName,".ini")))
    {
@@ -238,6 +289,11 @@ if (FileExists(ChangeFileExt(Application->ExeName,".ini")))
 //---------------------------------------------------------------------------
 void __fastcall TForm1::TestClick(TObject *Sender)
 {
+if (processExists(ExtractFileName(OutlookPath->Text)))
+   {
+   Application->MessageBox(TextOutlookRunning.c_str(), Application->Title.c_str(), MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
+   }
+
 STARTUPINFO StartInfo;
 PROCESS_INFORMATION ProcInfo;
 memset(&ProcInfo, 0, sizeof(ProcInfo));
@@ -401,4 +457,53 @@ catch (...)
       }
 }
 //---------------------------------------------------------------------------
+void __fastcall TForm1::UpdateFromRegistryClick(TObject *Sender)
+{
+UpdatePath();
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::UpdatePath()
+{
+UnicodeString OldOutlookPath = OutlookPath->Text;
+OutlookPath->Text = ReadRegistry(true);
+if (OutlookPath->Text == "")
+   {
+   OutlookPath->Text = ReadRegistry(false);
+   }
+
+if (OutlookPath->Text == "")
+   {
+   OutlookPath->Text = OldOutlookPath;
+   }
+}
+//---------------------------------------------------------------------------
+bool __fastcall TForm1::processExists(UnicodeString ExeFileName)
+{
+bool ContinueLoop;
+HANDLE FSnapshotHandle;
+LPPROCESSENTRY32 FProcessEntry32;
+bool Result = false;
+ExeFileName = UpperCase(ExeFileName);
+try {
+    FSnapshotHandle = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    FProcessEntry32->dwSize = sizeof(FProcessEntry32);
+    ContinueLoop = Process32First(FSnapshotHandle, FProcessEntry32);
+    while (ContinueLoop)
+          {
+          if ((UpperCase(ExtractFileName(FProcessEntry32->szExeFile)) == ExeFileName) || (UpperCase(FProcessEntry32->szExeFile) == ExeFileName))
+             {
+             Result = true;
+             break;
+             }
+          ContinueLoop = Process32Next(FSnapshotHandle, FProcessEntry32);
+          }
+    CloseHandle(FSnapshotHandle);
+    }
+catch (...)
+      {
+      }
+return Result;
+}
+
+
 
