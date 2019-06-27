@@ -222,25 +222,35 @@ if (ParamCount() > 0)
       catch (...)
             {
             }
-      STARTUPINFO StartInfo;
-      PROCESS_INFORMATION ProcInfo;
-      memset(&ProcInfo, 0, sizeof(ProcInfo));
-      memset(&StartInfo, 0 , sizeof(StartInfo));
-      StartInfo.cb = sizeof(StartInfo);
-      StartInfo.dwFlags = STARTF_USESHOWWINDOW;
-      StartInfo.wShowWindow = SW_MAXIMIZE;
-      Sleep(ParamStr(2).ToIntDef(0));
-      if (CreateProcess(NULL,("\"" + ParamStr(1) + "\" " + ParamStr(5)).c_str(), NULL, NULL, 0, 0, NULL, NULL, &StartInfo, &ProcInfo))
-         {
-         WaitForInputIdle(ProcInfo.hProcess, INFINITE);
-         Sleep(ParamStr(3).ToIntDef(1500));
-         EnumWindows((WNDENUMPROC)EnumWindowsProc, (LPARAM)ParamStr(4).ToIntDef(0));
-         Sleep(8000);
-         }
-      if (FileExists(MagicFile))
-         {
-         DeleteFile(MagicFile);
-         }
+      try {
+          STARTUPINFO StartInfo;
+          PROCESS_INFORMATION ProcInfo;
+          memset(&ProcInfo, 0, sizeof(ProcInfo));
+          memset(&StartInfo, 0 , sizeof(StartInfo));
+          StartInfo.cb = sizeof(StartInfo);
+          StartInfo.dwFlags = STARTF_USESHOWWINDOW;
+          StartInfo.wShowWindow = SW_MAXIMIZE;
+          Sleep(ParamStr(2).ToIntDef(0));
+          if (CreateProcess(NULL,("\"" + ParamStr(1) + "\" " + ParamStr(5)).c_str(), NULL, NULL, 0, 0, NULL, NULL, &StartInfo, &ProcInfo))
+             {
+             WaitForInputIdle(ProcInfo.hProcess, INFINITE);
+             Sleep(ParamStr(3).ToIntDef(1500));
+             EnumWindows((WNDENUMPROC)EnumWindowsProc, (LPARAM)ParamStr(4).ToIntDef(0));
+             Sleep(8000);
+             }
+          }
+      catch (...)
+            {
+            }
+      try {
+          if (FileExists(MagicFile))
+             {
+             DeleteFile(MagicFile);
+             }
+          }
+      catch (...)
+            {
+            }
       }
    Application->ShowMainForm = false;
    Application->Terminate();
@@ -292,44 +302,57 @@ void __fastcall TForm1::TestClick(TObject *Sender)
 if (processExists(ExtractFileName(OutlookPath->Text)))
    {
    Application->MessageBox(TextOutlookRunning.c_str(), Application->Title.c_str(), MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
+   return;
    }
 
-STARTUPINFO StartInfo;
-PROCESS_INFORMATION ProcInfo;
-memset(&ProcInfo, 0, sizeof(ProcInfo));
-memset(&StartInfo, 0 , sizeof(StartInfo));
-StartInfo.cb = sizeof(StartInfo);
-StartInfo.dwFlags = STARTF_USESHOWWINDOW;
-StartInfo.wShowWindow = SW_MAXIMIZE;
-Sleep(WaitBefore->Text.ToIntDef(0));
-if (CreateProcess(NULL,("\"" + OutlookPath->Text + "\" " + OutlookParameter->Text).c_str(), NULL, NULL, 0, 0, NULL, NULL, &StartInfo, &ProcInfo))
-   {
-   WaitForInputIdle(ProcInfo.hProcess, INFINITE);
-   Sleep(WaitEdit->Text.ToIntDef(1500));
-   EnumWindows((WNDENUMPROC)EnumWindowsProc, (LPARAM)Method->ItemIndex);
-   }
+try {
+    STARTUPINFO StartInfo;
+    PROCESS_INFORMATION ProcInfo;
+    memset(&ProcInfo, 0, sizeof(ProcInfo));
+    memset(&StartInfo, 0 , sizeof(StartInfo));
+    StartInfo.cb = sizeof(StartInfo);
+    StartInfo.dwFlags = STARTF_USESHOWWINDOW;
+    StartInfo.wShowWindow = SW_MAXIMIZE;
+    Sleep(WaitBefore->Text.ToIntDef(0));
+    if (CreateProcess(NULL,("\"" + OutlookPath->Text + "\" " + OutlookParameter->Text).c_str(), NULL, NULL, 0, 0, NULL, NULL, &StartInfo, &ProcInfo))
+       {
+       WaitForInputIdle(ProcInfo.hProcess, INFINITE);
+       Sleep(WaitEdit->Text.ToIntDef(1500));
+       EnumWindows((WNDENUMPROC)EnumWindowsProc, (LPARAM)Method->ItemIndex);
+       }
+
+    }
+catch ( const Exception &Exp)
+      {
+      Application->MessageBox(Exp.Message.c_str(), Application->Title.c_str(), MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
+      }
 }
 //---------------------------------------------------------------------------
 bool CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lParam)
 {
-wchar_t WindowName[80], ClassName[80];
-GetWindowText(hWnd, WindowName, 80);
-GetClassName(hWnd, ClassName, 80);
-if (UnicodeString(ClassName) == "rctrl_renwnd32")
-   {
-   HWND Win = FindWindow(ClassName, WindowName);
-   switch ((int)lParam)
-          {
-          case 0: {
-                  PostMessage(Win, WM_SYSCOMMAND, SC_MINIMIZE, 0);
-                  break;
-                  }
-          case 1: {
-                  ShowWindow(Win, SW_MINIMIZE);
-                  break;
-                  }
-          }
-   }
+try {
+    wchar_t WindowName[80], ClassName[80];
+    GetWindowText(hWnd, WindowName, 80);
+    GetClassName(hWnd, ClassName, 80);
+    if (UnicodeString(ClassName) == "rctrl_renwnd32")
+       {
+       HWND Win = FindWindow(ClassName, WindowName);
+       switch ((int)lParam)
+              {
+              case 0: {
+                      PostMessage(Win, WM_SYSCOMMAND, SC_MINIMIZE, 0);
+                      break;
+                      }
+              case 1: {
+                      ShowWindow(Win, SW_MINIMIZE);
+                      break;
+                      }
+              }
+       }
+    }
+catch (...)
+      {
+      }
 return true;
 }
 //---------------------------------------------------------------------------
@@ -479,25 +502,24 @@ if (OutlookPath->Text == "")
 //---------------------------------------------------------------------------
 bool __fastcall TForm1::processExists(UnicodeString ExeFileName)
 {
-bool ContinueLoop;
-HANDLE FSnapshotHandle;
-LPPROCESSENTRY32 FProcessEntry32;
 bool Result = false;
-ExeFileName = UpperCase(ExeFileName);
 try {
-    FSnapshotHandle = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-    FProcessEntry32->dwSize = sizeof(FProcessEntry32);
-    ContinueLoop = Process32First(FSnapshotHandle, FProcessEntry32);
-    while (ContinueLoop)
-          {
-          if ((UpperCase(ExtractFileName(FProcessEntry32->szExeFile)) == ExeFileName) || (UpperCase(FProcessEntry32->szExeFile) == ExeFileName))
+    PROCESSENTRY32 FProcessEntry32;
+    FProcessEntry32.dwSize = sizeof(PROCESSENTRY32);
+    HANDLE FSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+    if (Process32First(FSnapshot, &FProcessEntry32))
+       {
+       do {
+          if (!_wcsicmp(FProcessEntry32.szExeFile, ExeFileName.c_str()))
              {
              Result = true;
              break;
              }
-          ContinueLoop = Process32Next(FSnapshotHandle, FProcessEntry32);
           }
-    CloseHandle(FSnapshotHandle);
+       while (Process32Next(FSnapshot, &FProcessEntry32));
+       }
+
+    CloseHandle(FSnapshot);
     }
 catch (...)
       {
