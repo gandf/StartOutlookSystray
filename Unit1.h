@@ -13,6 +13,12 @@
 #include <IniFiles.hpp>
 #include <System.IOUtils.hpp>
 #include <TlHelp32.h>
+#include <cstdio>
+#if _WIN64
+#include <thread>
+#include <random>
+#include <chrono>
+#endif
 //---------------------------------------------------------------------------
 bool CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lParam);
 class TForm1 : public TForm
@@ -52,6 +58,7 @@ private:	// Déclarations utilisateur
     UnicodeString __fastcall ReadRegistry(bool FirstTry);
     void __fastcall UpdatePath();
     bool __fastcall processExists(UnicodeString exeFileName);
+    void __fastcall Wait(int Min, int Max);
     UnicodeString TextOutlookRunning;
 public:		// Déclarations utilisateur
     __fastcall TForm1(TComponent* Owner);

@@ -194,6 +194,9 @@ if (ParamCount() > 0)
       }
    //Vérifie si une autre instance est en cours
    UnicodeString MagicFile = TPath::GetTempPath() + ChangeFileExt(ExtractFileName(Application->ExeName), ".check");
+
+   Wait(10, 1500);
+
    bool CanRun = true;
    if (FileExists(MagicFile))
       {
@@ -216,13 +219,9 @@ if (ParamCount() > 0)
    if (CanRun)
       {
       //Creation du fichier temporaire
+      TFileStream* FileStr = NULL;
       try {
-          TFile::Create(MagicFile);
-          }
-      catch (...)
-            {
-            }
-      try {
+          FileStr = TFile::Create(MagicFile);
           STARTUPINFO StartInfo;
           PROCESS_INFORMATION ProcInfo;
           memset(&ProcInfo, 0, sizeof(ProcInfo));
@@ -230,13 +229,27 @@ if (ParamCount() > 0)
           StartInfo.cb = sizeof(StartInfo);
           StartInfo.dwFlags = STARTF_USESHOWWINDOW;
           StartInfo.wShowWindow = SW_MAXIMIZE;
+          if (processExists(ExtractFileName(ParamStr(1))))
+             {
+             Application->ShowMainForm = false;
+             Application->Terminate();
+             }
           Sleep(ParamStr(2).ToIntDef(0));
           if (CreateProcess(NULL,("\"" + ParamStr(1) + "\" " + ParamStr(5)).c_str(), NULL, NULL, 0, 0, NULL, NULL, &StartInfo, &ProcInfo))
              {
              WaitForInputIdle(ProcInfo.hProcess, INFINITE);
              Sleep(ParamStr(3).ToIntDef(1500));
              EnumWindows((WNDENUMPROC)EnumWindowsProc, (LPARAM)ParamStr(4).ToIntDef(0));
-             Sleep(8000);
+             Wait(2000, 8000);
+             }
+          }
+      catch (...)
+            {
+            }
+      try {
+          if (FileStr != NULL)
+             {
+             delete FileStr;
              }
           }
       catch (...)
@@ -526,6 +539,17 @@ catch (...)
       }
 return Result;
 }
-
-
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Wait(int Min, int Max)
+{
+#if _WIN64
+std::mt19937_64 eng{std::random_device{}()};  // or seed however you want
+std::uniform_int_distribution<> dist{Min, Max};
+std::this_thread::sleep_for(std::chrono::milliseconds{dist(eng)});
+#elif _WIN32
+srand(time(NULL));
+Sleep((std::rand()% (Max - Min + 1)) + Min);
+#endif
+}
+//---------------------------------------------------------------------------
 
